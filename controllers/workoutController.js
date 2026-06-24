@@ -21,6 +21,9 @@ exports.createWorkout = catchAsync(async (req, res, next) => {
 
 exports.getWorkout = catchAsync(async (req, res, next) => {
   const workout = await Workout.findById(req.params.id);
+  if (!workout) {
+    return next(new AppError("Workout not found", 404));
+  }
   res.status(200).json({
     status: "success",
     workout,
@@ -39,9 +42,27 @@ exports.updateWorkout = catchAsync(async (req, res, next) => {
 });
 
 exports.deleteWorkout = catchAsync(async (req, res, next) => {
-  await Workout.findByIdAndDelete(req.params.id);
+  const workout = await Workout.findById(req.params.id);
+  if (!workout) {
+    return next(new AppError("Workout not found", 404));
+  }
+
+  await workout.deleteOne();
+
   res.status(200).json({
     status: "success",
     message: "Workout deleted successfully",
+  });
+});
+
+exports.searchWorkouts = catchAsync(async (req, res, next) => {
+  const { name } = req.query;
+  const workouts = await Workout.find({
+    name: { $regex: `^${name}`, $options: "i" },
+  });
+  res.status(200).json({
+    status: "success",
+    results: workouts.length,
+    workouts,
   });
 });
