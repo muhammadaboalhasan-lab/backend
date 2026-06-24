@@ -1,7 +1,10 @@
 const cors = require("cors");
 const express = require("express");
-const app = express();
+const AppError = require("./utils/appError");
+const globalErrorHandler = require("./controllers/errorController");
+const workoutRoutes = require("./Routers/workoutRoutes");
 
+const app = express();
 
 //Middleware
 app.use(cors());
@@ -9,5 +12,12 @@ app.use(express.json());
 app.set("query parser", "extended");
 
 //Routes
+app.use("/workouts", workoutRoutes);
+
+app.all("*all", (req, res, next) => {
+  next(new AppError(`Can't find ${req.originalUrl} on this server!`, 404));
+});
+
+app.use(globalErrorHandler);
 
 module.exports = app;

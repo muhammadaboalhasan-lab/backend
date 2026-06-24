@@ -3,6 +3,8 @@ const mongoose = require("mongoose");
 const workoutSchema = new mongoose.Schema({
   name: {
     type: String,
+    minlength: [1, "A workout must have a muscle group"],
+    maxlength: [20, "A workout must have a muscle group"],
     required: [true, "A workout must have a name"],
   },
   muscleGroup: {
@@ -24,7 +26,17 @@ const workoutSchema = new mongoose.Schema({
   },
   description: {
     type: String,
+    minlength: [1, "A workout must have a description"],
+    maxlength: [200, "A workout must have a description"],
     required: [true, "A workout must have a description"],
+  },
+});
+
+workoutSchema.set("toJSON", {
+  getters: true,
+  versionKey: false,
+  transform: function (doc, ret) {
+    delete ret._id;
   },
 });
 
