@@ -57,6 +57,10 @@ exports.deleteWorkout = catchAsync(async (req, res, next) => {
 
 exports.searchWorkouts = catchAsync(async (req, res, next) => {
   const { name } = req.query;
+  if (!name) {
+    return next(new AppError("Name is required", 400));
+  }
+
   const workouts = await Workout.find({
     name: { $regex: `^${name}`, $options: "i" },
   });

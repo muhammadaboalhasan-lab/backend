@@ -11,7 +11,7 @@ exports.generateWorkout = catchAsync(async (req, res, next) => {
 
   const workout = await generateText({
     model: "openai/gpt-4o-mini",
-    prompt: `Generate a workout description by the user's prompt: ${prompt}`,
+    prompt: `Generate a workout description based on this prompt. Keep it under 200 characters: ${prompt}`,
   });
   res.status(200).json({
     status: "success",
