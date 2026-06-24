@@ -1,20 +1,17 @@
+// Handle uncaught exception Errors
+process.on("uncaughtException", (err) => {
+  console.log("UNCAUGHT EXCEPTION 💥");
+  console.log(err.name, err.message, err.stack.split("\n")[1].trim());
+  process.exit(1);
+});
+
 const dotenv = require("dotenv");
 const mongoose = require("mongoose");
-const cors = require("cors");
-const express = require("express");
+const app = require("./app");
 
 dotenv.config({ path: "./config.env" });
 
-const app = express();
 const PORT = process.env.PORT || 3000;
-
-app.use(cors());
-app.use(express.json());
-app.set("query parser", "extended");
-
-app.get("/", (req, res) => {
-  res.status(200).json({ message: "hello world2" });
-});
 
 const DB = process.env.DATABASE.replace(
   "<PASSWORD>",
@@ -27,4 +24,14 @@ mongoose
 
 const server = app.listen(PORT, () => {
   console.log(`SERVER RUNNING 🚀`);
+});
+
+// Handle unhandled rejection Errors
+process.on("unhandledRejection", (err) => {
+  console.log("UNHANDLED REJECTION 💥");
+  console.log(err.name, err.message);
+  server.close(() => {
+    console.log("SERVER CLOSING 🛑");
+    process.exit(1);
+  });
 });
